@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stargate-app
+  namespace: stargate
+  labels:
+    app: stargate-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stargate-app
+  template:
+    metadata:
+      labels:
+        app: stargate-app
+    spec:
+      containers:
+      - image: hclcloudnativelabs/online-boutique:sglatest
+        imagePullPolicy: IfNotPresent
+        name: stargate-app
+        ports:
+          - containerPort: 8080
+      imagePullSecrets:
+          - name: regcred
+      restartPolicy: Always
