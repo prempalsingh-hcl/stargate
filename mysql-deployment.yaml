@@ -1,3 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  namespace: stargate
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: stargate-app
+    tier: mysql
+  clusterIP: None
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -5,18 +18,18 @@ metadata:
   name: stargate-mysql
   namespace: stargate
   labels:
-    app: stargate
+    app: stargate-app
 spec:
   selector:
     matchLabels:
-      app: stargate
+      app: stargate-app
       tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: stargate
+        app: stargate-app
         tier: mysql
     spec:
       containers:
@@ -37,16 +50,4 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pv-claim
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-  namespace: stargate
-spec:
-  ports:
-  - port: 3306
-  selector:
-    app: mysql
-  clusterIP: None
+          claimName: mysql-sg-pvc

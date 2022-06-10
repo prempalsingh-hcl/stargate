@@ -1,0 +1,6 @@
+resources:
+  - mysql-secret.yaml
+  - mysql-stargate-storage-class.yaml
+  - mysql-stargate-pv.yaml
+  - mysql-stargate-pvc.yaml
+  - mysql-deployment.yaml

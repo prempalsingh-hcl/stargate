@@ -1,27 +1,44 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stargate-app
+  name: stargate
   namespace: stargate
   labels:
     app: stargate-app
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: stargate-app
+      tier: frontend
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: stargate-app
+        tier: frontend
     spec:
       containers:
       - image: hclcloudnativelabs/online-boutique:sglatest
         imagePullPolicy: IfNotPresent
         name: stargate-app
+        env:
+        - name: STARGATE_DB_HOST
+          value: stargate-mysql
+        - name: STARGATE_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
         ports:
-          - containerPort: 8080
+        - containerPort: 8080
+          name: stargate-app
+        volumeMounts:
+        - name: stargate-persistent-storage
+          mountPath: /stargate
       imagePullSecrets:
-          - name: regcred
-      restartPolicy: Always
+        - name: regcred
+      volumes:
+      - name: stargate-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-sg-pvc
